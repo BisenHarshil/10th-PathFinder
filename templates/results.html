@@ -1,0 +1,9 @@
+{% extends "base.html" %}{% block title %}My Matches{% endblock %}
+{% block content %}<main class="container">
+<div class="page-head"><div class="tag">YOUR RESULT</div><h1>Your career matches</h1><p class="muted">Based on your answers, these are your strongest matches in this attempt.</p></div>
+<div class="grid">
+{% for r in results %}<article class="card match"><div class="icon-box">{{ r.icon }}</div><div class="match-pct">{{ r.match_percent }}%</div><h2>{{ r.name }}</h2><span class="tag">{{ r.stream_name or 'Career' }}</span><p class="muted">{{ r.short_description }}</p><a class="btn btn-light" href="{{ url_for('career_detail',slug=r.slug) }}">Explore career →</a></article>{% endfor %}
+</div>
+<div class="card" style="margin-top:22px;background:linear-gradient(135deg,#eff7ff,#ffffff)"><b>Remember:</b> PathFinder is a discovery tool, not a final decision. Explore the options, talk to teachers/counsellors, and choose based on your own goals.</div>
+<div style="margin-top:20px;display:flex;gap:10px"><a class="btn btn-primary" href="{{ url_for('quiz') }}">Retake Quiz</a><a class="btn btn-light" href="{{ url_for('history') }}">View History</a></div>
+</main>{% endblock %}

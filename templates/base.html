@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{% block title %}PathFinder{% endblock %} · KV Andrews Ganj</title>
+
+    <meta name="description"
+          content="PathFinder — Career discovery and opportunities platform for PM SHRI Kendriya Vidyalaya Andrews Ganj">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+<!-- =========================
+     ANIMATED BACKGROUND
+========================= -->
+
+<div class="background-effects">
+    <div class="gradient-orb orb-one"></div>
+    <div class="gradient-orb orb-two"></div>
+    <div class="gradient-orb orb-three"></div>
+
+    <div class="particles">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+</div>
+
+
+<!-- =========================
+     NAVBAR
+========================= -->
+
+<nav class="navbar">
+
+    <div class="nav-inner">
+
+        <a class="brand" href="{{ url_for('home') }}">
+
+            <div class="logo-wrap">
+                <img
+                    class="logo"
+                    src="{{ url_for('static', filename='images/kv-logo.png') }}"
+                    alt="PM SHRI Kendriya Vidyalaya logo"
+                    onerror="this.style.display='none'; this.parentElement.classList.add('logo-fallback');"
+                >
+
+                <span class="logo-fallback-text">KV</span>
+            </div>
+
+            <span class="brand-text">
+                <strong>PathFinder</strong>
+                <small>PM SHRI Kendriya Vidyalaya Andrews Ganj</small>
+            </span>
+
+        </a>
+
+
+        <!-- Mobile menu -->
+
+        <button
+            class="menu-btn"
+            type="button"
+            aria-label="Open navigation"
+            onclick="document.querySelector('.navlinks').classList.toggle('active')">
+            ☰
+        </button>
+
+
+        <!-- Navigation -->
+
+        <div class="navlinks">
+
+            <a href="{{ url_for('careers') }}">
+                <span>Careers</span>
+            </a>
+
+            <a href="{{ url_for('competitions') }}">
+                <span>Opportunities</span>
+            </a>
+
+            <a href="{{ url_for('exams') }}">
+                <span>Important Exams</span>
+            </a>
+
+            {% if current_user %}
+
+                <a href="{{ url_for('dashboard') }}">
+                    <span>Dashboard</span>
+                </a>
+
+                {% if current_user.role == 'admin' %}
+                    <a href="{{ url_for('admin') }}">
+                        <span>Admin</span>
+                    </a>
+                {% endif %}
+
+                <a href="{{ url_for('logout') }}">
+                    <span>Logout</span>
+                </a>
+
+            {% else %}
+
+                <a href="{{ url_for('login') }}">
+                    <span>Login</span>
+                </a>
+
+                <a class="btn btn-primary"
+                   href="{{ url_for('register') }}">
+                    Get Started
+                    <span class="btn-arrow">→</span>
+                </a>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+<!-- =========================
+     FLASH MESSAGES
+========================= -->
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+
+    {% if messages %}
+
+        <div class="flash">
+
+            {% for cat, msg in messages %}
+
+                <div class="alert {{ cat }}">
+
+                    <span>{{ msg }}</span>
+
+                    <button
+                        type="button"
+                        onclick="this.parentElement.remove()">
+                        ×
+                    </button>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% endif %}
+
+{% endwith %}
+
+
+<!-- =========================
+     MAIN CONTENT
+========================= -->
+
+<main class="page-content">
+
+    {% block content %}{% endblock %}
+
+</main>
+
+
+<!-- =========================
+     FOOTER
+========================= -->
+
+<footer class="footer">
+
+    <div class="footer-inner">
+
+        <div class="footer-brand">
+
+            <strong>PathFinder</strong>
+
+            <span class="muted">
+                Explore · Learn · Grow
+            </span>
+
+        </div>
+
+        <div class="footer-center">
+            Built by <strong>Harshil Bisen</strong>
+        </div>
+
+        <div class="footer-right">
+            PM SHRI Kendriya Vidyalaya Andrews Ganj
+        </div>
+
+    </div>
+
+</footer>
+
+
+<!-- =========================
+     JAVASCRIPT
+========================= -->
+
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    /* Page entrance animation */
+
+    document.body.classList.add("page-loaded");
+
+
+    /* Scroll reveal */
+
+    const revealElements =
+        document.querySelectorAll(
+            ".card, .career-card, .feature-card, .stat-card"
+        );
+
+    const observer = new IntersectionObserver(
+        entries => {
+
+            entries.forEach(entry => {
+
+                if (entry.isIntersecting) {
+
+                    entry.target.classList.add("reveal-visible");
+
+                    observer.unobserve(entry.target);
+
+                }
+
+            });
+
+        },
+        {
+            threshold: 0.12
+        }
+    );
+
+    revealElements.forEach(element => {
+        element.classList.add("reveal");
+        observer.observe(element);
+    });
+
+
+    /* Navbar scroll effect */
+
+    const navbar = document.querySelector(".navbar");
+
+    window.addEventListener("scroll", () => {
+
+        if (window.scrollY > 30) {
+            navbar.classList.add("navbar-scrolled");
+        } else {
+            navbar.classList.remove("navbar-scrolled");
+        }
+
+    });
+
+});
+
+</script>
+
+</body>
+</html>

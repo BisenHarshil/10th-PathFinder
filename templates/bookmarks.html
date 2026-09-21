@@ -1,0 +1,5 @@
+{% extends "base.html" %}{% block title %}My Bookmarks{% endblock %}
+{% block content %}<main class="container"><div class="page-head"><div class="tag">SAVED</div><h1>My bookmarks</h1><p class="muted">Keep interesting careers and opportunities in one place.</p></div>
+<div class="two-col"><div class="card"><h2>Careers</h2><div class="list">{% for c in careers %}<a class="list-row" href="{{url_for('career_detail',slug=c.slug)}}"><span>{{c.icon}} {{c.name}}</span><span>→</span></a>{% else %}<div class="empty">No saved careers.</div>{% endfor %}</div></div>
+<div class="card"><h2>Opportunities</h2><div class="list">{% for c in competitions %}<div class="list-row"><span>{{c.name}}</span><small>{{c.deadline}}</small></div>{% else %}<div class="empty">No saved opportunities.</div>{% endfor %}</div></div></div>
+</main>{% endblock %}

@@ -1,0 +1,9 @@
+{% extends "base.html" %}{% block title %}Register{% endblock %}
+{% block content %}<div class="auth-wrap"><form class="auth-card" method="post">
+<div class="tag">JOIN PATHFINDER</div><h1>Create account</h1><p class="muted">A simple profile for your career journey.</p>
+<label>Full name</label><input name="name" required>
+<label>Email</label><input type="email" name="email" required>
+<label>Class</label><select name="class_level"><option>8</option><option>9</option><option selected>10</option><option>11</option><option>12</option></select>
+<label>Password</label><input type="password" name="password" required minlength="6">
+<button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:22px">Create Account</button>
+</form></div>{% endblock %}

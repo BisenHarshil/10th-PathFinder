@@ -1,0 +1,7 @@
+{% extends "base.html" %}{% block title %}Career Explorer{% endblock %}
+{% block content %}<main class="container">
+<div class="page-head"><div class="tag">EXPLORE</div><h1>Career Explorer</h1><p class="muted">Explore subjects, skills, entrance exams and sample colleges.</p></div>
+<form class="searchbar"><input name="q" value="{{ search }}" placeholder="Search a career..."><button class="btn btn-primary">Search</button></form>
+<div class="grid">{% for c in careers %}<article class="card"><div class="icon-box">{{ c.icon }}</div><span class="tag">{{ c.stream_name or 'Explore' }}</span><h2>{{ c.name }}</h2><p class="muted">{{ c.short_description }}</p>
+<a class="btn btn-light" href="{{ url_for('career_detail',slug=c.slug) }}">View details →</a></article>{% else %}<div class="empty card">No careers found.</div>{% endfor %}</div>
+</main>{% endblock %}

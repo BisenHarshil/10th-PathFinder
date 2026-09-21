@@ -1,0 +1,10 @@
+{% extends "base.html" %}{% block title %}Interest Quiz{% endblock %}
+{% block content %}<main class="container">
+<div class="page-head"><div class="tag">4 QUICK QUESTIONS</div><h1>What interests you?</h1><p class="muted">There are no right or wrong answers. Pick the option that feels most like you.</p></div>
+<form class="card quiz-card" method="post" action="{{ url_for('quiz_submit') }}">
+<div class="progress"><span></span></div>
+{% for q in questions %}<section class="question"><h3>{{ loop.index }}. {{ q.question_text }}</h3>
+{% for o in q.options %}<label class="option"><input type="radio" name="q_{{ q.id }}" value="{{ o.id }}" required><span>{{ o.option_text }}</span></label>{% endfor %}
+</section>{% endfor %}
+<button class="btn btn-primary" style="margin:22px 0 0 26px">Calculate My Matches →</button>
+</form></main>{% endblock %}

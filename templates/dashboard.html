@@ -1,0 +1,18 @@
+{% extends "base.html" %}{% block title %}Dashboard{% endblock %}
+{% block content %}<main class="container">
+<div class="page-head"><div class="tag">STUDENT DASHBOARD</div><h1>Hello, {{ current_user.name.split(' ')[0] }} 👋</h1><p class="muted">Explore. Learn. Grow.</p></div>
+<div class="grid grid-4">
+<a class="card" href="{{ url_for('quiz') }}"><div class="icon-box">◎</div><b>Take Quiz</b><p class="muted">Find career matches</p></a>
+<a class="card" href="{{ url_for('careers') }}"><div class="icon-box">▦</div><b>Career Explorer</b><p class="muted">Explore careers</p></a>
+<a class="card" href="{{ url_for('competitions') }}"><div class="icon-box">🏆</div><b>Opportunities</b><p class="muted">Find competitions</p></a>
+<a class="card" href="{{ url_for('history') }}"><div class="icon-box">◴</div><b>My Results</b><p class="muted">View quiz history</p></a>
+</div>
+<section style="margin-top:38px" class="two-col">
+<div class="card"><div class="section-title"><h2>Recent results</h2><a href="{{ url_for('history') }}" class="muted">History →</a></div>
+{% if latest %}<div class="list">{% for r in latest %}<div class="list-row"><span>{{ r.name }}</span><b class="pct">{{ r.match_percent }}%</b></div>{% endfor %}</div>
+{% else %}<div class="empty">Take your first quiz to see matches here.</div>{% endif %}</div>
+<div class="card"><div class="section-title"><h2>Saved careers</h2><a href="{{ url_for('bookmarks') }}" class="muted">All →</a></div>
+{% if bookmarks %}<div class="list">{% for b in bookmarks %}<a class="list-row" href="{{ url_for('career_detail',slug=b.slug) }}"><span>{{ b.name }}</span><span>→</span></a>{% endfor %}</div>
+{% else %}<div class="empty">Bookmark careers you want to revisit.</div>{% endif %}</div>
+</section>
+</main>{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "base.html" %}{% block title %}Find Your Path{% endblock %}
+{% block content %}
+<main class="container">
+<section class="hero">
+ <div class="fade-up">
+  <div class="tag">CAREER DISCOVERY FOR KV STUDENTS</div>
+  <h1>Discover your path.<br><span class="gradient">Build your future.</span></h1>
+  <p>Take a short interest quiz, discover careers that fit your interests, explore skills and entrance exams, and find competitions worth knowing about.</p>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:24px">
+   {% if current_user %}<a class="btn btn-primary" href="{{ url_for('quiz') }}">Take the Quiz →</a>
+   {% else %}<a class="btn btn-primary" href="{{ url_for('register') }}">Start PathFinder →</a>{% endif %}
+   <a class="btn btn-light" href="{{ url_for('careers') }}">Explore Careers</a>
+  </div>
+ </div>
+ <div class="hero-art">
+  <div class="orb one"></div><div class="orb two"></div>
+  <div class="hero-card">
+   <div class="tag">YOUR MATCHES</div><h3>A clearer next step</h3>
+   <div class="mini-match"><span>Software Developer</span><span class="pct">92%</span></div>
+   <div class="mini-match"><span>Data Scientist</span><span class="pct">85%</span></div>
+   <div class="mini-match"><span>Mechanical Engineer</span><span class="pct">78%</span></div>
+   <p class="muted" style="font-size:12px">Matches are generated from weighted quiz answers stored in MySQL.</p>
+  </div>
+ </div>
+</section>
+<div class="feature-strip">
+ <div class="feature fade-up"><i>◎</i><div><b>Career Quiz</b><br><span class="muted">Find careers aligned with your interests.</span></div></div>
+ <div class="feature fade-up delay1"><i>🏆</i><div><b>Opportunities</b><br><span class="muted">Olympiads, scholarships and competitions.</span></div></div>
+ <div class="feature fade-up delay2"><i>▦</i><div><b>Career Explorer</b><br><span class="muted">Subjects, skills, exams and colleges.</span></div></div>
+</div>
+<section style="margin-top:55px">
+ <div class="section-title"><h2>Explore careers</h2><a class="muted" href="{{ url_for('careers') }}">View all →</a></div>
+ <div class="grid">
+ {% for c in careers %}<a class="card fade-up" href="{{ url_for('career_detail', slug=c.slug) }}">
+   <div class="icon-box">{{ c.icon }}</div><h3>{{ c.name }}</h3><p class="muted">{{ c.short_description }}</p>
+ </a>{% endfor %}
+ </div>
+</section>
+<section style="margin-top:55px">
+ <div class="section-title"><h2>Closing soon</h2><a class="muted" href="{{ url_for('competitions') }}">Explore →</a></div>
+ <div class="list">
+ {% for x in competitions %}<div class="list-row"><div><b>{{ x.name }}</b><div class="muted">{{ x.type }} · Class {{ x.class_level }}</div></div><span class="tag">Ends {{ x.deadline }}</span></div>{% endfor %}
+ </div>
+</section>
+</main>
+{% endblock %}

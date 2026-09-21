@@ -1,0 +1,9 @@
+{% extends "base.html" %}{% block title %}Opportunities{% endblock %}
+{% block content %}<main class="container">
+<div class="page-head"><div class="tag">OLYMPIADS · SCHOLARSHIPS · COMPETITIONS</div><h1>Opportunities</h1><p class="muted">A simple list of opportunities with upcoming deadlines.</p></div>
+<form class="card" style="display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end;margin-bottom:20px">
+<div><label>Class</label><select name="class_level"><option value="">All</option>{% for c in ['8','9','10','11','12'] %}<option {% if class_filter==c %}selected{% endif %}>{{c}}</option>{% endfor %}</select></div>
+<div><label>Interest</label><select name="interest"><option value="">All</option>{% for x in ['Science','Mathematics','All'] %}<option {% if interest==x %}selected{% endif %}>{{x}}</option>{% endfor %}</select></div>
+<button class="btn btn-primary">Filter</button></form>
+<div class="list">{% for x in competitions %}<div class="card list-row"><div><span class="tag">{{ x.type }}</span><h3 style="margin:8px 0">{{ x.name }}</h3><p class="muted">{{ x.description }}</p><small>Class {{x.class_level}} · Interest: {{x.interest}} · Deadline: {{x.deadline}}</small></div><div style="display:flex;flex-direction:column;gap:8px;align-items:end">{% if x.website %}<a class="btn btn-light" target="_blank" href="{{x.website}}">Details</a>{% endif %}<form method="post" action="{{ url_for('bookmark_competition',competition_id=x.id) }}"><button class="btn btn-primary">{{ 'Saved' if x.id in saved else '☆ Save' }}</button></form></div></div>{% else %}<div class="empty card">No matching opportunities.</div>{% endfor %}</div>
+</main>{% endblock %}

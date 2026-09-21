@@ -1,0 +1,5 @@
+{% extends "base.html" %}{% block title %}Admin{% endblock %}
+{% block content %}<main class="container"><div class="page-head"><div class="tag">ADMIN PANEL</div><h1>PathFinder control room</h1><p class="muted">Manage the small content database behind the student experience.</p></div>
+<div class="admin-nav"><a href="{{url_for('admin')}}">Dashboard</a><a href="{{url_for('admin_careers')}}">Careers</a><a href="{{url_for('admin_questions')}}">Quiz Questions</a></div>
+<div class="stat-grid">{% for key,val in stats.items() %}<div class="card stat"><span class="muted">{{key|capitalize}}</span><h2>{{val}}</h2></div>{% endfor %}</div>
+</main>{% endblock %}

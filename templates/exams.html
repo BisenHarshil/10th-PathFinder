@@ -1,0 +1,3 @@
+{% extends "base.html" %}{% block title %}Important Exams{% endblock %}
+{% block content %}<main class="container"><div class="page-head"><div class="tag">QUICK REFERENCE</div><h1>Important exams</h1><p class="muted">A lightweight reference instead of a complicated timeline. Always verify dates on the official exam website.</p></div>
+<div class="grid">{% for e in exams %}<div class="card"><span class="tag">{{ e.exam_date or 'Date varies' }}</span><h2>{{e.name}}</h2><p class="muted">{{e.full_name}}</p><p>{{e.description}}</p>{% if e.website %}<a class="btn btn-light" target="_blank" href="{{e.website}}">Official website →</a>{% endif %}</div>{% endfor %}</div></main>{% endblock %}

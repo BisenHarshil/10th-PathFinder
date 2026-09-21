@@ -1,0 +1,8 @@
+{% extends "base.html" %}{% block title %}Login{% endblock %}
+{% block content %}<div class="auth-wrap"><form class="auth-card" method="post">
+<div class="tag">PATHFINDER ACCOUNT</div><h1>Welcome back</h1><p class="muted">Continue exploring your future.</p>
+<label>Email</label><input type="email" name="email" required placeholder="you@example.com">
+<label>Password</label><input type="password" name="password" required placeholder="••••••••">
+<button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:22px">Login</button>
+<p class="muted" style="text-align:center;margin-top:18px">New here? <a style="color:var(--blue)" href="{{ url_for('register') }}">Create an account</a></p>
+</form></div>{% endblock %}
