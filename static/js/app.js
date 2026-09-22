@@ -1,288 +1,91 @@
 document.documentElement.classList.add("js");
-
 document.addEventListener("DOMContentLoaded", () => {
-  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  /* =========================
-     MOBILE MENU
-  ========================= */
+  /* mobile menu */
   const menu = document.querySelector(".menu-btn");
   const links = document.querySelector(".navlinks");
+  if (menu) menu.addEventListener("click", () => {
+    links.style.display = links.style.display === "flex" ? "none" : "flex";
+    links.style.flexDirection = "column";
+    links.style.position = "absolute";
+    links.style.top = "72px";
+    links.style.right = "15px";
+    links.style.padding = "16px";
+    links.style.background = "#072b61";
+    links.style.borderRadius = "14px";
+  });
 
-  if (menu && links) {
-    menu.addEventListener("click", () => {
-      links.classList.toggle("mobile-open");
-      menu.classList.toggle("active");
-    });
-
-    // Close menu after clicking a link
-    links.querySelectorAll("a").forEach((link) => {
-      link.addEventListener("click", () => {
-        links.classList.remove("mobile-open");
-        menu.classList.remove("active");
-      });
-    });
-  }
-
-  /* =========================
-     FADE-UP STAGGER
-  ========================= */
   document.querySelectorAll(".fade-up").forEach((el, i) => {
     el.style.animationDelay = `${Math.min(i * 60, 420)}ms`;
   });
 
-  /* =========================
-     NAVBAR SCROLL EFFECT
-  ========================= */
+  /* navbar shrink on scroll */
   const nav = document.querySelector(".navbar");
+  const onScroll = () => nav && nav.classList.toggle("scrolled", scrollY > 20);
+  onScroll(); addEventListener("scroll", onScroll, { passive: true });
 
-  const onScroll = () => {
-    if (!nav) return;
-    nav.classList.toggle("scrolled", window.scrollY > 20);
-  };
-
-  onScroll();
-  window.addEventListener("scroll", onScroll, { passive: true });
-
-  /* =========================
-     COUNT-UP ANIMATION
-  ========================= */
+  /* count-up for percentages */
   const count = (el) => {
-    if (el.dataset.counted === "true") return;
-
-    const match = el.textContent.match(/\d+/);
-    if (!match) return;
-
-    const end = Number(match[0]);
-    const suffix = el.textContent.replace(match[0], "");
-
-    el.dataset.counted = "true";
-
+    const m = el.textContent.match(/\d+/); if (!m) return;
+    const end = +m[0], suffix = el.textContent.replace(m[0], "");
     if (reduce) return;
-
-    const start = performance.now();
-    const duration = 900;
-
-    const tick = (time) => {
-      const progress = Math.min((time - start) / duration, 1);
-
-      // Smooth ease-out
-      const eased = 1 - Math.pow(1 - progress, 3);
-
-      el.textContent = Math.round(end * eased) + suffix;
-
-      if (progress < 1) {
-        requestAnimationFrame(tick);
-      } else {
-        el.classList.add("pop");
-      }
+    const t0 = performance.now(), dur = 900;
+    const tick = (t) => {
+      const p = Math.min((t - t0) / dur, 1), e = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(end * e) + suffix;
+      if (p < 1) requestAnimationFrame(tick); else el.classList.add("pop");
     };
-
-    el.textContent = "0" + suffix;
-    requestAnimationFrame(tick);
+    el.textContent = "0" + suffix; requestAnimationFrame(tick);
   };
 
-  /* =========================
-     SCROLL REVEAL
-  ========================= */
-  const targets = document.querySelectorAll(
-    ".card:not(.fade-up)," +
-    ".list-row," +
-    ".feature:not(.fade-up)," +
-    ".question," +
-    ".section-title," +
-    ".page-head"
-  );
-
+  /* scroll reveal (staggered per group) */
+  const targets = document.querySelectorAll(".card:not(.fade-up),.list-row,.feature:not(.fade-up),.question,.section-title,.page-head");
   targets.forEach((el) => {
-    const parent = el.parentElement;
-
-    if (!parent) return;
-
-    const siblings = [...parent.children].filter((child) =>
-      child.matches(".card,.list-row,.feature,.question")
-    );
-
-    const index = siblings.indexOf(el);
-
-    el.style.setProperty(
-      "--d",
-      `${Math.max(index, 0) * 70}ms`
-    );
-
+    const sibs = [...el.parentElement.children].filter((c) => c.matches(".card,.list-row,.feature,.question"));
+    el.style.setProperty("--d", Math.max(sibs.indexOf(el), 0) * 70 + "ms");
     el.classList.add("reveal");
   });
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((en) => {
+      if (!en.isIntersecting) return;
+      en.target.classList.add("in");
+      en.target.querySelectorAll(".pct,.match-pct").forEach(count);
+      io.unobserve(en.target);
+    });
+  }, { threshold: 0.12 });
+  targets.forEach((el) => io.observe(el));
+  document.querySelectorAll(".hero-card .pct").forEach(count);
 
-  if (!reduce && "IntersectionObserver" in window) {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-
-          entry.target.classList.add("in");
-
-          entry.target
-            .querySelectorAll(".pct,.match-pct")
-            .forEach(count);
-
-          observer.unobserve(entry.target);
-        });
-      },
-      {
-        threshold: 0.12
-      }
-    );
-
-    targets.forEach((el) => observer.observe(el));
-  } else {
-    targets.forEach((el) => el.classList.add("in"));
+  /* hero card tilt */
+  const art = document.querySelector(".hero-art"), hc = document.querySelector(".hero-card");
+  if (art && hc && !reduce) {
+    art.addEventListener("mousemove", (e) => {
+      const r = art.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+      hc.style.animation = "none";
+      hc.style.transform = `perspective(700px) rotateY(${x * 10}deg) rotateX(${-y * 10}deg)`;
+    });
+    art.addEventListener("mouseleave", () => { hc.style.transform = ""; hc.style.animation = ""; });
   }
 
-  /* Hero percentage counters */
-  document
-    .querySelectorAll(".hero-card .pct")
-    .forEach(count);
-
-  /* =========================
-     HERO 3D TILT
-  ========================= */
-  const art = document.querySelector(".hero-art");
-  const heroCard = document.querySelector(".hero-card");
-
-  if (art && heroCard && !reduce) {
-    art.addEventListener("mousemove", (event) => {
-      const rect = art.getBoundingClientRect();
-
-      const x =
-        (event.clientX - rect.left) / rect.width - 0.5;
-
-      const y =
-        (event.clientY - rect.top) / rect.height - 0.5;
-
-      heroCard.style.animation = "none";
-
-      heroCard.style.transform = `
-        perspective(700px)
-        rotateY(${x * 10}deg)
-        rotateX(${-y * 10}deg)
-        translateY(-4px)
-      `;
-    });
-
-    art.addEventListener("mouseleave", () => {
-      heroCard.style.transform = "";
-      heroCard.style.animation = "";
-    });
-  }
-
-  /* =========================
-     BUTTON RIPPLE
-  ========================= */
-  document.addEventListener("click", (event) => {
-    const button = event.target.closest(".btn");
-
-    if (!button || reduce) return;
-
-    const rect = button.getBoundingClientRect();
-
-    const size = Math.max(
-      rect.width,
-      rect.height
-    );
-
-    const ripple = document.createElement("span");
-
-    ripple.className = "ripple";
-
-    ripple.style.width = `${size}px`;
-    ripple.style.height = `${size}px`;
-
-    ripple.style.left =
-      `${event.clientX - rect.left - size / 2}px`;
-
-    ripple.style.top =
-      `${event.clientY - rect.top - size / 2}px`;
-
-    button.appendChild(ripple);
-
-    setTimeout(() => {
-      ripple.remove();
-    }, 600);
+  /* button ripple */
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest(".btn"); if (!b || reduce) return;
+    const r = b.getBoundingClientRect(), s = Math.max(r.width, r.height);
+    const d = document.createElement("span"); d.className = "ripple";
+    d.style.cssText = `width:${s}px;height:${s}px;left:${e.clientX - r.left - s / 2}px;top:${e.clientY - r.top - s / 2}px`;
+    b.appendChild(d); setTimeout(() => d.remove(), 600);
   });
 
-  /* =========================
-     QUIZ PROGRESS
-  ========================= */
+  /* quiz progress bar tracks answered questions */
   const bar = document.querySelector(".progress span");
-  const questions = document.querySelectorAll(".question");
-  const quizCard = document.querySelector(".quiz-card");
-
-  if (bar && questions.length && quizCard) {
-    const updateProgress = () => {
-      const answered = [...questions].filter(
-        (question) =>
-          question.querySelector("input:checked")
-      ).length;
-
-      const percentage =
-        (answered / questions.length) * 100;
-
-      bar.style.width = `${percentage}%`;
+  const qs = document.querySelectorAll(".question");
+  if (bar && qs.length) {
+    const upd = () => {
+      const done = [...qs].filter((q) => q.querySelector("input:checked")).length;
+      bar.style.width = (done / qs.length) * 100 + "%";
     };
-
-    quizCard.addEventListener(
-      "change",
-      updateProgress
-    );
-
-    updateProgress();
+    document.querySelector(".quiz-card").addEventListener("change", upd); upd();
   }
-
-  /* =========================
-     ACTIVE NAV LINK
-  ========================= */
-  const currentPath =
-    window.location.pathname;
-
-  document
-    .querySelectorAll(".navlinks a")
-    .forEach((link) => {
-      const href = link.getAttribute("href");
-
-      if (
-        href &&
-        href !== "/" &&
-        currentPath.startsWith(href)
-      ) {
-        link.classList.add("active");
-      }
-    });
-
-  /* =========================
-     BUTTON LOADING EFFECT
-  ========================= */
-  document
-    .querySelectorAll("form")
-    .forEach((form) => {
-      form.addEventListener("submit", () => {
-        const button =
-          form.querySelector(
-            "button[type='submit'], .btn[type='submit']"
-          );
-
-        if (!button) return;
-
-        button.classList.add("loading");
-
-        const originalText =
-          button.dataset.originalText ||
-          button.textContent;
-
-        button.dataset.originalText =
-          originalText;
-
-        button.textContent = "Processing...";
-      });
-    });
-
 });
