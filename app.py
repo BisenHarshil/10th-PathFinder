@@ -3,7 +3,7 @@ from functools import wraps
 from datetime import date, datetime
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 import mysql.connector
-from mysql.connector import Error
+from mysql.connector import Error, pooling
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 
@@ -22,19 +22,29 @@ DB_CONFIG = {
     "ssl_verify_identity": False
 }
 
+DB_POOL = pooling.MySQLConnectionPool(
+    pool_name="pathfinder_pool",
+    pool_size=5,
+    pool_reset_session=True,
+    **DB_CONFIG
+)
+
 def db():
-    return mysql.connector.connect(**DB_CONFIG)
+    return DB_POOL.get_connection()
 
 def query(sql, params=(), one=False, commit=False):
     conn = db()
     cur = conn.cursor(dictionary=True)
+
     try:
         cur.execute(sql, params)
+
         if commit:
             conn.commit()
             return cur.lastrowid
-        rows = cur.fetchone() if one else cur.fetchall()
-        return rows
+
+        return cur.fetchone() if one else cur.fetchall()
+
     finally:
         cur.close()
         conn.close()
