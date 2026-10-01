@@ -1,108 +1,172 @@
-# 🚀 PathFinder
+# PathFinder
 
-### Explore. Discover. Decide.
+### Career Discovery & Opportunity Platform
 
-**PathFinder** is a modern career guidance platform designed to help students explore career options, discover important exams and competitions, and understand which career paths may match their interests.
+PathFinder is a modern career-discovery web application designed to help students explore career options based on their interests, strengths, subjects, and preferences.
 
-Built as a school innovation project for **PM SHRI Kendriya Vidyalaya Andrews Ganj**, PathFinder combines a clean futuristic interface with a Flask + MySQL backend.
+It provides an interactive career quiz, personalized career recommendations, career information, opportunities, bookmarks, and an administrative control panel — all backed by a MySQL database.
+
+---
+
+## 🚀 Live Project
+
+**Live Website:**
+https://one0th-pathfinder.onrender.com/
 
 ---
 
 ## ✨ Features
 
-### 🎯 Career Explorer
+### 🎯 Interest-Based Career Quiz
 
-Explore different career paths through structured information including:
+* Interactive multiple-choice career quiz
+* Questions stored dynamically in MySQL
+* Career-specific scoring using weighted options
+* Personalized results based on quiz responses
+* Top career recommendations with matching percentages
 
-* Career descriptions
+### 🔎 Career Explorer
+
+Explore careers with information such as:
+
+* Career overview
 * Required subjects
-* Essential skills
-* Related streams
-* Entrance examinations
-* Colleges and institutions
-* Career recommendations
+* Important skills
+* Related exams
+* Recommended colleges
+* Relevant academic streams
 
-### 🧠 Career Quiz
+### 📅 Opportunities
 
-Students can take an interest-based quiz and receive career matches based on their responses.
+Students can discover opportunities such as:
 
-The system:
-
-1. Presents career-oriented questions
-2. Records student responses
-3. Calculates career scores
-4. Ranks matching careers
-5. Displays match percentages
-
-### 📊 Student Dashboard
-
-Each student gets a personalized dashboard containing:
-
-* Recent quiz results
-* Career matches
-* Saved careers
-* Saved opportunities
-* Quick navigation
+* Olympiads
+* Competitions
+* Scholarships
+* Academic opportunities
+* Deadlines
+* Interest/class-based information
 
 ### 🔖 Bookmarks
 
-Students can save:
+* Save interesting careers and opportunities
+* Quickly access saved items from the bookmarks section
+
+### 📊 Quiz History
+
+* Previous quiz attempts are stored
+* Students can revisit their career recommendation history
+
+### 🛠️ Admin Panel
+
+Administrators can manage:
 
 * Careers
+* Quiz questions
+* Students
 * Competitions
-* Opportunities
+* Platform content
 
-Saved items can be accessed later from the bookmarks section.
+### 🔐 Authentication
 
-### 🏆 Opportunities & Competitions
+* Student registration
+* Login/logout
+* Password hashing
+* Role-based admin access
 
-Students can discover upcoming competitions and opportunities filtered according to:
+### ⚡ Performance
 
-* Class
-* Interest
-* Deadline
-
-### 📚 Important Exams
-
-The platform provides information about important examinations related to different career paths.
-
-### 🛠️ Admin Dashboard
-
-Administrators can manage the platform's content through a dedicated control panel.
-
-Admin features include:
-
-* Dashboard statistics
-* Career management
-* Quiz question management
-* Competition management
-* Content administration
+* MySQL connection pooling
+* Optimized database connection handling
+* Deployed production database using Aiven MySQL
 
 ---
 
-# 🧩 Technology Stack
-
-| Technology       | Purpose                   |
-| ---------------- | ------------------------- |
-| 🐍 Python        | Backend programming       |
-| 🌐 Flask         | Web framework             |
-| 🗄️ MySQL        | Database                  |
-| 🎨 HTML5         | Page structure            |
-| 💎 CSS3          | UI & animations           |
-| ⚡ JavaScript     | Interactive features      |
-| 🔐 Werkzeug      | Password hashing          |
-| 🔑 Python-dotenv | Environment configuration |
-
----
-
-# 🏗️ Project Architecture
+## 🧠 How PathFinder Works
 
 ```text
-PathFinder/
+Student
+   ↓
+Register / Login
+   ↓
+Take Career Quiz
+   ↓
+Answers → Weighted Career Scoring
+   ↓
+Top Career Matches
+   ↓
+Explore Careers & Opportunities
+   ↓
+Bookmark Interesting Options
+```
+
+---
+
+## 🏗️ Technology Stack
+
+### Frontend
+
+* HTML5
+* CSS3
+* JavaScript
+* Responsive UI
+
+### Backend
+
+* Python
+* Flask
+* Flask routing and session management
+
+### Database
+
+* MySQL
+* mysql-connector-python
+
+### Deployment
+
+* Render — Web Application Hosting
+* Aiven — Cloud MySQL Database
+
+### Development Tools
+
+* Visual Studio Code
+* Git
+* GitHub
+* MySQL Workbench
+
+---
+
+## 🗄️ Database Structure
+
+PathFinder uses a relational MySQL database containing tables for:
+
+* `users`
+* `streams`
+* `careers`
+* `exams`
+* `career_exams`
+* `colleges`
+* `quiz_questions`
+* `quiz_options`
+* `option_career_weights`
+* `quiz_attempts`
+* `quiz_answers`
+* `attempt_results`
+* `competitions`
+* `bookmarks`
+
+The database separates users, career information, quiz content, scoring relationships, opportunities, and saved items into structured entities.
+
+---
+
+## 📁 Project Structure
+
+```text
+Path Finder/
 │
 ├── app.py
-├── schema.sql
 ├── seed_data.py
+├── schema.sql
 ├── requirements.txt
 ├── .env.example
 ├── README.md
@@ -112,285 +176,143 @@ PathFinder/
 │   ├── home.html
 │   ├── login.html
 │   ├── register.html
-│   ├── dashboard.html
 │   ├── quiz.html
 │   ├── results.html
-│   ├── history.html
 │   ├── careers.html
 │   ├── career_detail.html
-│   ├── competitions.html
-│   ├── exams.html
+│   ├── opportunities.html
 │   ├── bookmarks.html
-│   │
 │   └── admin/
-│       ├── dashboard.html
-│       ├── careers.html
-│       └── questions.html
 │
 └── static/
     ├── css/
-    │   └── style.css
-    │
     ├── js/
-    │   └── app.js
-    │
     └── images/
-        └── kv-logo.png
 ```
 
 ---
 
-# ⚙️ How It Works
+## ⚙️ Local Setup
 
-```text
-                ┌──────────────────┐
-                │      Student     │
-                └────────┬─────────┘
-                         │
-                         ▼
-                ┌──────────────────┐
-                │   PathFinder UI  │
-                └────────┬─────────┘
-                         │
-          ┌──────────────┼──────────────┐
-          ▼              ▼              ▼
-      Careers          Quiz       Opportunities
-          │              │              │
-          └──────────────┼──────────────┘
-                         ▼
-                ┌──────────────────┐
-                │   Flask Backend  │
-                └────────┬─────────┘
-                         │
-                         ▼
-                ┌──────────────────┐
-                │   MySQL Database │
-                └──────────────────┘
-```
-
----
-
-# 🧠 Quiz Recommendation System
-
-PathFinder uses a weighted scoring system to generate career matches.
-
-Each quiz option can have different weights for different careers.
-
-For example:
-
-```text
-Question
-   ↓
-Student selects option
-   ↓
-Option → Career Weight
-   ↓
-Score calculation
-   ↓
-Career ranking
-   ↓
-Top career matches
-```
-
-The system then converts the highest career score into a percentage-based match.
-
-> **Important:** The quiz is designed as a guidance tool, not as a definitive assessment of a student's future.
-
----
-
-# 🔐 Security
-
-PathFinder includes basic security practices such as:
-
-* Password hashing
-* Session-based authentication
-* Login protection
-* Admin-only routes
-* Environment variables for database credentials
-* Role-based access control
-* Protected student dashboards
-
-Sensitive configuration should be stored in `.env` rather than directly inside the source code.
-
----
-
-# 🚀 Installation
-
-## 1. Clone the repository
+### 1. Clone the repository
 
 ```bash
-git clone <your-repository-url>
-cd PathFinder
+git clone https://github.com/BisenHarshil/10th-PathFinder.git
+cd 10th-PathFinder
 ```
 
-## 2. Create a virtual environment
-
-### Windows
+### 2. Create a virtual environment
 
 ```bash
 python -m venv venv
+```
+
+Activate it on Windows:
+
+```bash
 venv\Scripts\activate
 ```
 
-### macOS / Linux
-
-```bash
-python3 -m venv venv
-source venv/bin/activate
-```
-
----
-
-## 3. Install dependencies
+### 3. Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
----
+### 4. Configure environment variables
 
-## 4. Configure environment variables
-
-Create a `.env` file in the project directory.
+Create a `.env` file based on `.env.example`.
 
 Example:
 
 ```env
-SECRET_KEY=your-secret-key
-
 DB_HOST=localhost
 DB_PORT=3306
 DB_USER=root
-DB_PASSWORD=your-mysql-password
+DB_PASSWORD=your_password
 DB_NAME=pathfinder
 ```
 
----
+Never commit your `.env` file to GitHub.
 
-# 🗄️ Database Setup
+### 5. Create the database
 
-Make sure MySQL is running.
+Run `schema.sql` using MySQL Workbench or the MySQL command line.
 
-Open MySQL Workbench and execute:
-
-```sql
-CREATE DATABASE pathfinder;
-```
-
-Then run the project's database schema:
-
-```text
-schema.sql
-```
-
-After creating the database, seed the initial data:
+### 6. Load sample data
 
 ```bash
 python seed_data.py
 ```
 
-This populates the database with the initial careers, questions, exams, competitions and related data.
-
----
-
-# ▶️ Running the Application
-
-Start the Flask development server:
+### 7. Start the application
 
 ```bash
 python app.py
 ```
 
-You should see Flask running locally.
-
-Open the local address shown in the terminal in your browser.
-
----
-
-# 👨‍💻 Developer
-
-### Harshil Bisen
-
-**Class 10 | PM SHRI Kendriya Vidyalaya Andrews Ganj**
-
-PathFinder was developed as a student-led technology project combining:
-
-* Python
-* Flask
-* MySQL
-* HTML
-* CSS
-* JavaScript
-* Database design
-* Authentication
-* Web development
-* Git & GitHub
-
-The project was built with the goal of creating a practical platform that can help students explore possible career directions in one place.
-
----
-
-# 🎯 Project Goals
-
-PathFinder aims to make career exploration:
-
-**Accessible → Structured → Interactive → Student-friendly**
-
-Instead of searching across multiple websites, students can use one platform to explore:
+Open:
 
 ```text
-CAREERS
-   +
-QUIZ
-   +
-EXAMS
-   +
-COMPETITIONS
-   +
-BOOKMARKS
-   +
-PERSONAL DASHBOARD
+http://127.0.0.1:5000
 ```
 
 ---
 
-# 🔮 Future Improvements
+## ☁️ Production Deployment
+
+PathFinder is deployed using:
+
+**Frontend + Flask Application:** Render
+
+**Cloud Database:** Aiven MySQL
+
+Production database credentials are configured through environment variables rather than being stored in the source code.
+
+The application uses MySQL connection pooling to reduce repeated database connection overhead when communicating with the remote production database.
+
+---
+
+## 🔒 Security Notes
+
+* Database credentials are stored in environment variables.
+* `.env` is excluded from version control.
+* Passwords are stored using secure password hashing.
+* Admin functionality is protected through role-based access.
+* Production credentials should never be committed to GitHub.
+
+---
+
+## 🎓 Project Context
+
+**Project:** PathFinder
+**Student:** Harshil Bisen
+**Class:** 10
+**School:** PM SHRI Kendriya Vidyalaya Andrews Ganj
+**Technology:** Python + Flask + MySQL
+**Deployment:** Render + Aiven
+
+PathFinder was developed as a practical full-stack web application demonstrating backend development, database management, authentication, dynamic scoring, deployment, and responsive web design.
+
+---
+
+## 🌟 Future Improvements
 
 Possible future versions could include:
 
-* 🤖 AI-powered career assistant
-* 📈 Advanced student analytics
-* 🧭 Personalized career roadmaps
-* 🎓 More detailed college information
-* 📅 Exam deadline reminders
-* 🔔 Opportunity notifications
-* 📱 Progressive Web App support
-* 🌐 Multi-school deployment
-* 🧠 More advanced recommendation algorithms
-* 📊 Admin analytics and reports
+* AI-assisted career guidance
+* More comprehensive career datasets
+* Advanced student analytics
+* More quizzes and assessment categories
+* College/course comparison
+* Opportunity notifications
+* Improved recommendation algorithms
+* Student progress dashboards
 
 ---
 
-# 📌 Project Status
+## 📜 License
 
-**🚧 Active Development**
-
-The core platform, authentication, database integration, career explorer, quiz system, bookmarks, opportunities and admin functionality are being developed as part of the project.
-
----
-
-# 📜 License
-
-This project is created for educational and school-project purposes.
+This project is created for educational and portfolio purposes.
 
 © 2026 Harshil Bisen. All rights reserved.
-
----
-
-## ⭐ Support
-
-If you find the project interesting, consider giving the repository a ⭐ on GitHub.
-
-### PathFinder
-
-**Explore. Discover. Decide.**
