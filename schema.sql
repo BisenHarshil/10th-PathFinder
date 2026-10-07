@@ -1,4 +1,4 @@
-CREATE DATABASE IF NOT EXISTS pathfinder CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS defaultdb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE pathfinder;
 
 CREATE TABLE IF NOT EXISTS users (
