@@ -8,7 +8,7 @@ cur = conn.cursor()
 cur.execute("""
 INSERT INTO users(name,email,password_hash,class_level,role)
 VALUES(%s,%s,%s,%s,'admin')
-ON DUPLICATE KEY UPDATE role='admin'
+ON CONFLICT (email) DO UPDATE SET role='admin'
 """, ("PathFinder Admin","admin@pathfinder.local",generate_password_hash("admin123"),"12"))
 
 streams = [
@@ -18,7 +18,7 @@ streams = [
     ("Creative","Design, media, communication and creative technology.")
 ]
 for x in streams:
-    cur.execute("INSERT IGNORE INTO streams(name,description) VALUES(%s,%s)", x)
+    cur.execute("INSERT INTO streams(name,description) VALUES(%s,%s) ON CONFLICT (name) DO NOTHING", x)
 
 cur.execute("SELECT name,id FROM streams")
 stream_map = {name: sid for name, sid in cur.fetchall()}
@@ -37,8 +37,8 @@ careers = [
 ]
 for c in careers:
     cur.execute("""
-    INSERT IGNORE INTO careers(name,slug,short_description,subjects,skills,icon,featured,stream_id)
-    VALUES(%s,%s,%s,%s,%s,%s,%s,%s)
+    INSERT INTO careers(name,slug,short_description,subjects,skills,icon,featured,stream_id)
+    VALUES(%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT (slug) DO NOTHING
     """, (*c[:-1], stream_map[c[-1]]))
 
 cur.execute("SELECT id,name FROM careers")
@@ -51,7 +51,7 @@ exams = [
 ("CLAT","Common Law Admission Test", "2026-12-01","Entrance examination for participating National Law Universities.","https://consortiumofnlus.ac.in/"),
 ]
 for e in exams:
-    cur.execute("INSERT IGNORE INTO exams(name,full_name,exam_date,description,website) VALUES(%s,%s,%s,%s,%s)", e)
+    cur.execute("INSERT INTO exams(name,full_name,exam_date,description,website) VALUES(%s,%s,%s,%s,%s) ON CONFLICT DO NOTHING", e)
 cur.execute("SELECT id,name FROM exams")
 exam_map = {name: eid for eid,name in cur.fetchall()}
 
@@ -65,7 +65,7 @@ links = {
 }
 for cname, enames in links.items():
     for ename in enames:
-        cur.execute("INSERT IGNORE INTO career_exams(career_id,exam_id) VALUES(%s,%s)", (career_map[cname],exam_map[ename]))
+        cur.execute("INSERT INTO career_exams(career_id,exam_id) VALUES(%s,%s) ON CONFLICT DO NOTHING", (career_map[cname],exam_map[ename]))
 
 colleges = {
 "Software Developer":["IIT Bombay — Mumbai","IIT Delhi — New Delhi","IIIT Hyderabad — Hyderabad"],
@@ -111,20 +111,20 @@ for qtext, opts in questions:
     row=cur.fetchone()
     if row: qid=row[0]
     else:
-        cur.execute("INSERT INTO quiz_questions(question_text) VALUES(%s)",(qtext,))
-        qid=cur.lastrowid
+        cur.execute("INSERT INTO quiz_questions(question_text) VALUES(%s) RETURNING id",(qtext,))
+        qid=cur.fetchone()[0]
     for text, careers_for_opt, weights in opts:
         cur.execute("SELECT id FROM quiz_options WHERE question_id=%s AND option_text=%s",(qid,text))
         row=cur.fetchone()
         if row: oid=row[0]
         else:
-            cur.execute("INSERT INTO quiz_options(question_id,option_text) VALUES(%s,%s)",(qid,text))
-            oid=cur.lastrowid
+            cur.execute("INSERT INTO quiz_options(question_id,option_text) VALUES(%s,%s) RETURNING id",(qid,text))
+            oid=cur.fetchone()[0]
         for cname, weight in zip(careers_for_opt,weights):
             cur.execute("""
                 INSERT INTO option_career_weights(option_id,career_id,weight)
                 VALUES(%s,%s,%s)
-                ON DUPLICATE KEY UPDATE weight=VALUES(weight)
+                ON CONFLICT (option_id,career_id) DO UPDATE SET weight=EXCLUDED.weight
             """,(oid,career_map[cname],weight))
 
 competitions = [
@@ -135,8 +135,8 @@ competitions = [
 ]
 for c in competitions:
     cur.execute("""
-    INSERT IGNORE INTO competitions(name,type,class_level,interest,deadline,description,website)
-    VALUES(%s,%s,%s,%s,%s,%s,%s)
+    INSERT INTO competitions(name,type,class_level,interest,deadline,description,website)
+    VALUES(%s,%s,%s,%s,%s,%s,%s) ON CONFLICT DO NOTHING
     """,c)
 
 conn.commit()

@@ -1,3 +1,22 @@
+# Supabase / PostgreSQL migration notes
+
+This project version changes the backend database driver from MySQL to PostgreSQL for Supabase.
+
+## Setup with Supabase
+1. Create a Supabase project.
+2. In Supabase, open **SQL Editor**, paste the full contents of `schema.sql`, and run it.
+3. Copy your PostgreSQL connection string from **Project Settings → Database**. Prefer the Session pooler connection if your host environment cannot use direct IPv6 connectivity.
+4. Set `DATABASE_URL` in your local `.env` and in Render Environment Variables. Use the actual connection string from Supabase; do not commit `.env`.
+5. Install packages with `pip install -r requirements.txt`.
+6. Run `python seed_data.py` once to insert the sample careers, quiz questions, options, and competitions.
+7. Start locally with `python app.py`, test all pages, then commit and push to GitHub so Render can deploy.
+
+The sample admin credentials seeded by `seed_data.py` are `admin@pathfinder.local` / `admin123`. Change/remove this demo account before using the site publicly.
+
+**Important:** This schema creates new tables in Supabase; it does not automatically copy the records from your old Aiven database. Run the seed script to add demo data, or separately migrate any real user records you need to preserve. Never share your database password or full connection string publicly.
+
+---
+
 # PathFinder
 
 ### Career Discovery & Opportunity Platform

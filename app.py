@@ -2,8 +2,8 @@ import os
 from functools import wraps
 from datetime import date, datetime
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
-import mysql.connector
-from mysql.connector import Error, pooling
+import psycopg
+from psycopg.rows import dict_row
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 
@@ -12,41 +12,33 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "change-this-secret-key")
 
-DB_CONFIG = {
-    "host": os.getenv("DB_HOST", "localhost"),
-    "port": int(os.getenv("DB_PORT", "3306")),
-    "user": os.getenv("DB_USER", "root"),
-    "password": os.getenv("DB_PASSWORD", ""),
-    "database": os.getenv("DB_NAME", "pathfinder"),
-    "ssl_verify_cert": False,
-    "ssl_verify_identity": False
-}
-
-DB_POOL = pooling.MySQLConnectionPool(
-    pool_name="pathfinder_pool",
-    pool_size=5,
-    pool_reset_session=True,
-    **DB_CONFIG
-)
+DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
 
 def db():
-    return DB_POOL.get_connection()
+    """Open a PostgreSQL connection to Supabase using DATABASE_URL."""
+    if not DATABASE_URL:
+        raise RuntimeError("DATABASE_URL is missing. Add your Supabase PostgreSQL connection string to the environment.")
+    return psycopg.connect(DATABASE_URL, connect_timeout=10)
 
 def query(sql, params=(), one=False, commit=False):
+    """Run a parameterized query and return rows as dictionaries when applicable."""
     conn = db()
-    cur = conn.cursor(dictionary=True)
-
     try:
-        cur.execute(sql, params)
-
-        if commit:
-            conn.commit()
-            return cur.lastrowid
-
-        return cur.fetchone() if one else cur.fetchall()
-
+        with conn.cursor(row_factory=dict_row) as cur:
+            statement = sql.strip()
+            # PostgreSQL returns generated IDs with RETURNING instead of lastrowid.
+            if commit and statement[:6].upper() == "INSERT" and " RETURNING " not in statement.upper():
+                statement = statement.rstrip(";") + " RETURNING id"
+            cur.execute(statement, params)
+            if commit:
+                row = cur.fetchone() if statement[:6].upper() == "INSERT" else None
+                conn.commit()
+                return row["id"] if row else None
+            return cur.fetchone() if one else cur.fetchall()
+    except Exception:
+        conn.rollback()
+        raise
     finally:
-        cur.close()
         conn.close()
 
 def current_user():
@@ -83,7 +75,7 @@ def home():
     careers = query("SELECT * FROM careers ORDER BY featured DESC, name LIMIT 6")
     competitions = query("""
         SELECT * FROM competitions
-        WHERE deadline >= CURDATE()
+        WHERE deadline >= CURRENT_DATE
         ORDER BY deadline ASC LIMIT 3
     """)
     return render_template("home.html", careers=careers, competitions=competitions)
@@ -233,13 +225,12 @@ def history():
     user = current_user()
     attempts = query("""
         SELECT qa.id, qa.created_at,
-               GROUP_CONCAT(CONCAT(c.name,' (',ar.match_percent,'%)')
-               ORDER BY ar.match_percent DESC SEPARATOR ', ') AS matches
+               STRING_AGG(c.name || ' (' || ar.match_percent::text || '%)', ', ' ORDER BY ar.match_percent DESC) AS matches
         FROM quiz_attempts qa
         LEFT JOIN attempt_results ar ON ar.attempt_id=qa.id
         LEFT JOIN careers c ON c.id=ar.career_id
         WHERE qa.user_id=%s
-        GROUP BY qa.id
+        GROUP BY qa.id, qa.created_at
         ORDER BY qa.created_at DESC
     """, (user["id"],))
     return render_template("history.html", attempts=attempts)
@@ -285,7 +276,7 @@ def competitions():
     user = current_user()
     class_filter = request.args.get("class_level", "")
     interest = request.args.get("interest", "")
-    sql = "SELECT * FROM competitions WHERE deadline >= CURDATE()"
+    sql = "SELECT * FROM competitions WHERE deadline >= CURRENT_DATE"
     params = []
     if class_filter:
         sql += " AND (class_level=%s OR class_level='All')"
