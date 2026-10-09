@@ -225,7 +225,7 @@ def history():
     user = current_user()
     attempts = query("""
         SELECT qa.id, qa.created_at,
-               STRING_AGG(c.name || ' (' || ar.match_percent::text || '%)', ', ' ORDER BY ar.match_percent DESC) AS matches
+               STRING_AGG(c.name || ' (' || ar.match_percent::text || '%%)', ', ' ORDER BY ar.match_percent DESC) AS matches
         FROM quiz_attempts qa
         LEFT JOIN attempt_results ar ON ar.attempt_id=qa.id
         LEFT JOIN careers c ON c.id=ar.career_id
